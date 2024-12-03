@@ -4,12 +4,16 @@ from .serializers import RegistrationSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from profile_app.models import Profile
+from django.contrib.auth.models import User
+from rest_framework.exceptions import NotFound
+from rest_framework import status
+
 
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request): 
-        print(request.data)
+    def post(self, request):
+        request.data['username'] = generate_username(request)
         serializer = RegistrationSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
@@ -21,16 +25,32 @@ class RegistrationView(APIView):
                 'email': saved_account.email,
                 "user_id": saved_account.pk
             }
-            
-            # Hier die Korrektur: Zugriff auf type
-            profile_type = request.data.get('type', 'customer')  # Default auf 'customer', falls 'type' fehlt
-            
-            # Profil erstellen
-            Profile.objects.create(
-                user=saved_account,
-                email=saved_account.email,
-                type=profile_type, 
-            )
+            generate_profile(request, saved_account) 
+            return Response(data)
         else:
-            data = serializer.errors      
-        return Response(data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+def generate_username(request):
+    username = request.data.get('username', '') 
+    if ' ' in username:
+            username = username.replace(' ', '_')
+    return username.lower()
+
+        
+def generate_profile(request, saved_account):
+    profile_type = request.data.get('type', 'customer') 
+    name_parts = saved_account.username.split('_')
+    first_name_registration = name_parts[0].capitalize()
+    if len(name_parts) > 1:
+        last_name_registration = '_'.join(name_parts[1:]).capitalize()
+    else:
+        last_name_registration = '' 
+    Profile.objects.create(
+            user=saved_account,
+            username=saved_account.username,
+            first_name=first_name_registration,
+            last_name=last_name_registration,
+            email=saved_account.email,
+            type=profile_type, 
+            )
+     

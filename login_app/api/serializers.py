@@ -3,20 +3,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 class CustomLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        email = data.get('email')
+        username = data.get('username')
         password = data.get('password')
-        if not email or not password:
-            raise serializers.ValidationError("E-mail and password are required.")
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid e-mail address or password.")
-        user = authenticate(username=user.username, password=password)
+        if not username or not password:
+            raise serializers.ValidationError({"detail": "Benutzername und Passwort sind erforderlich."})
+        user = authenticate(username=username, password=password)
         if user is None:
-            raise serializers.ValidationError("Invalid e-mail address or password.")
+            raise serializers.ValidationError({"detail": "Ungültiger Benutzername oder Passwort."})
         data['user'] = user
         return data
+

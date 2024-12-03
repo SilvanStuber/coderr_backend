@@ -11,13 +11,15 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 
-class ProfileViewSets(generics.ListCreateAPIView):
+class ProfileViewSets(generics.ListCreateAPIView):  
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+ 
    
     def get_queryset(self):
-        user_id = self.kwargs.get('pk')
-        profiles = Profile.objects.filter(user_id=user_id)
+        pk = self.kwargs.get('pk')
+        print(pk)
+        profiles = Profile.objects.filter(user_id=pk)
         if not profiles.exists():
             raise NotFound(detail={
                 "ok": False,
