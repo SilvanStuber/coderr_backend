@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'login_app',
     'registration_app',
     'profile_app',
+    'offers_app',
 
 ]
 
