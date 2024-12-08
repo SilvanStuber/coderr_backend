@@ -9,12 +9,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True) 
-
     class Meta:
         model = Profile
-        fields = [ 
+        fields = [    
             'user',       
-            'username',      
+            'username', 
             'first_name',
             'last_name',
             'file',
@@ -27,23 +26,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'created_at',
         ]
 
-class BusinessProfileSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer 
-
-    class Meta:
-        model = Profile
-        fields = [
-            'user',
-            'file',
-            'location',
-            'tel',
-            'description',
-            'working_hours',
-            'type'
-        ]
-
 class CustomerProfileSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer()  # Geschachtelte User-Daten
+    user = ProfileSerializer()
 
     class Meta:
         model = Profile
@@ -51,5 +35,23 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
             'user',
             'file',
             'uploaded_at',
-            'type'
+            'type',
         ]
+
+
+class BusinessProfileSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer()  
+
+    class Meta:
+        model = Profile
+        fields = [
+            'user',
+            'file',
+            'uploaded_at', 
+            "location",
+            "tel",
+            "description",
+            "working_hours",
+            'type',
+        ]
+        

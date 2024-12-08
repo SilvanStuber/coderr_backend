@@ -18,7 +18,6 @@ class ProfileViewSets(generics.ListCreateAPIView):
    
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        print(pk)
         profiles = Profile.objects.filter(user_id=pk)
         if not profiles.exists():
             raise NotFound(detail={
@@ -64,12 +63,36 @@ class ProfileViewSets(generics.ListCreateAPIView):
     
 class ProfileCustomerViewSets(APIView):
     def get(self, request, *args, **kwargs):
-        customer_profiles = Profile.objects.filter(type="customer")
-        serializer = CustomerProfileSerializer(customer_profiles, many=True)
-        return Response(serializer.data)
-
+        try:
+            customer_profiles = Profile.objects.filter(type="customer")
+            serializer = CustomerProfileSerializer(customer_profiles, many=True)
+            print("serializer.data", serializer.data)
+            return Response({
+                "ok": True,
+                "status": 200,
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except NotFound:
+            return Response({
+                "ok": False,
+                "status": 404,
+                "message": "Profil nicht gefunden"
+            }, status=status.HTTP_404_NOT_FOUND)
 class ProfileBusinessViewSets(APIView):
-       def get(self, request, *args, **kwargs):
-        business_profiles = Profile.objects.filter(type="business")
-        serializer = BusinessProfileSerializer(business_profiles, many=True)
-        return Response(serializer.data)
+    def get(self, request, *args, **kwargs):
+        try:
+            business_profiles = Profile.objects.filter(type="business")
+            serializer = BusinessProfileSerializer(business_profiles, many=True)
+            return Response({
+                "ok": True,
+                "status": 200,
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except NotFound:
+            return Response({
+                "ok": False,
+                "status": 404,
+                "message": "Profil nicht gefunden"
+            }, status=status.HTTP_404_NOT_FOUND)
+       
+        

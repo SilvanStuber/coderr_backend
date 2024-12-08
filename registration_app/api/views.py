@@ -38,19 +38,27 @@ def generate_username(request):
 
         
 def generate_profile(request, saved_account):
-    profile_type = request.data.get('type', 'customer') 
-    name_parts = saved_account.username.split('_')
-    first_name_registration = name_parts[0].capitalize()
-    if len(name_parts) > 1:
-        last_name_registration = '_'.join(name_parts[1:]).capitalize()
+    profile_type = request.data.get('type', 'customer')
+    if saved_account.username:
+        name_parts = saved_account.username.split('_')
+        first_name_registration = name_parts[0].capitalize()
+        last_name_registration = '_'.join(name_parts[1:]).capitalize() if len(name_parts) > 1 else ''
     else:
-        last_name_registration = '' 
+        first_name_registration = ''
+        last_name_registration = ''
+
+    user = saved_account
+    user.first_name = first_name_registration
+    user.last_name = last_name_registration
+    user.save()
+
     Profile.objects.create(
-            user=saved_account,
-            username=saved_account.username,
-            first_name=first_name_registration,
-            last_name=last_name_registration,
-            email=saved_account.email,
-            type=profile_type, 
-            )
-     
+        user=saved_account,
+        username=saved_account.username,
+        first_name=first_name_registration,
+        last_name=last_name_registration,
+        email=saved_account.email,
+        type=profile_type,
+    )
+    
+

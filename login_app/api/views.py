@@ -7,7 +7,9 @@ from rest_framework import status
 
 class CostomLoginView(APIView):
     permission_classes = [AllowAny]
+    
     def post(self, request):
+        request.data['username'] = generate_username(request)
         serializer = CustomLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
@@ -17,8 +19,14 @@ class CostomLoginView(APIView):
                 'token': token.key,
                 'username': user.username,
                 'email': user.email,
-                "user_id": user.pk,
+                "user_id": user.id,
             }
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def generate_username(request):
+    username = request.data.get('username', '') 
+    if ' ' in username:
+            username = username.replace(' ', '_')
+    return username.lower()
