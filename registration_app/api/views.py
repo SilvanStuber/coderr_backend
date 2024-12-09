@@ -53,7 +53,7 @@ def generate_profile(request, saved_account):
     user.save()
 
     Profile.objects.create(
-        user=saved_account,
+        user=saved_account.pk,
         username=saved_account.username,
         first_name=first_name_registration,
         last_name=last_name_registration,

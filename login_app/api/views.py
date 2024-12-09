@@ -14,7 +14,6 @@ class CostomLoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             token, created = Token.objects.get_or_create(user=user)
-
             data = {
                 'token': token.key,
                 'username': user.username,

@@ -4,14 +4,28 @@ from django.shortcuts import get_object_or_404
 from orders_app.models import Order
 from offers_app.models import OfferDetail
 from .serializers import OrderSerializer, CreateOrderSerializer
+from rest_framework import status
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 
 class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Order.objects.filter(customer_user=user) | Order.objects.filter(business_user=user)
+    def get(self, request, *args, **kwargs):
+        try:
+            user = self.request.user
+            orders = Order.objects.filter(customer_user=user) | Order.objects.filter(business_user=user)
+            serializer = self.get_serializer(orders, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except NotFound:
+            return Response({
+                "ok": False,
+                "status": 404,
+                "message": "Order nicht gefunden"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+        
 
 class OrderCreateView(generics.CreateAPIView):
     serializer_class = CreateOrderSerializer
