@@ -9,12 +9,8 @@ class Order(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
-    customer_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="customer_orders"
-    )
-    business_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="business_orders"
-    )
+    customer_user = models.CharField(max_length=100, default="")
+    business_user = models.CharField(max_length=100, default="")
     title = models.CharField(max_length=255)
     revisions = models.IntegerField(default=0)
     delivery_time_in_days = models.PositiveIntegerField()

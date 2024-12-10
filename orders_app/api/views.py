@@ -1,15 +1,15 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from orders_app.models import Order
-from offers_app.models import OfferDetail
+from rest_framework.permissions import IsAuthenticated
 from .serializers import OrderSerializer, CreateOrderSerializer
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
 class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         try:
@@ -29,7 +29,7 @@ class OrderListView(generics.ListAPIView):
 
 class OrderCreateView(generics.CreateAPIView):
     serializer_class = CreateOrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save()
@@ -37,12 +37,12 @@ class OrderCreateView(generics.CreateAPIView):
 class OrderDetailView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 class OrderUpdateView(generics.UpdateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def partial_update(self, request, *args, **kwargs):
         order = self.get_object()
@@ -54,17 +54,17 @@ class OrderUpdateView(generics.UpdateAPIView):
 
 class OrderDeleteView(generics.DestroyAPIView):
     queryset = Order.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 class OrderCountView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         count = Order.objects.filter(business_user_id=business_user_id, status="in_progress").count()
         return Response({"order_count": count})
 
 class CompletedOrderCountView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         count = Order.objects.filter(business_user_id=business_user_id, status="completed").count()

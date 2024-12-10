@@ -2,9 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from profile_app.models import Profile
 from .serializers import ProfileSerializer, BusinessProfileSerializer, CustomerProfileSerializer
-from rest_framework import  mixins, generics
+from rest_framework import generics
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
@@ -50,6 +49,8 @@ class ProfileViewSets(generics.ListCreateAPIView):
 
     
 class ProfileCustomerViewSets(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         try:
             customer_profiles = Profile.objects.filter(type="customer")
@@ -62,6 +63,8 @@ class ProfileCustomerViewSets(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
         
 class ProfileBusinessViewSets(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, *args, **kwargs):
         try:
             business_profiles = Profile.objects.filter(type="business")

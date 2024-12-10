@@ -23,10 +23,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/login/', include('login_app.api.urls')),
     path('api/registration/', include('registration_app.api.urls')),
+    path('api/base-info/', include('base_info_app.api.urls')), 
     path('api/profile/', include('profile_app.api.urls')),
     path('api/profiles/', include('profile_app.api.urls')),
+    path('api/reviews/', include('reviews_app.api.urls')), 
     path('api/offers/', include('offers_app.api.urls')),
-    path('api/orders/', include('orders_app.api.urls')),
+    path('api/orders/', include('orders_app.api.urls')), 
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
