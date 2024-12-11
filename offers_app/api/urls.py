@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import OfferListView, OfferDetailView, OfferDetailSpecificView
+from .views import OfferViewSet, OfferDetailViewSet
 
 urlpatterns = [
-    path('', OfferListView.as_view(), name='offer-list'),
-    path('<int:pk>/', OfferDetailView.as_view(), name='offer-detail'),
-    path('offerdetails/<int:pk>/', OfferDetailSpecificView.as_view(), name='offer-detail-specific'),
+    path('', OfferViewSet.as_view({'get': 'list', 'post': 'create'}), name='offer-list'),
+    path('<int:pk>/', OfferViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}), name='offer-detail'),
+    path('offerdetails/<int:pk>/', OfferDetailViewSet.as_view({'get': 'retrieve'}), name='offer-detail-specific'),
 ]

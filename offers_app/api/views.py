@@ -1,20 +1,20 @@
-from rest_framework import generics, permissions
+from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from offers_app.models import Offer, OfferDetail
 from .serializers import OfferSerializer, OfferDetailSerializer
 from django.db.models import Q
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import ListAPIView
+from rest_framework import  viewsets, filters
+from .pagination import CustomPageNumberPagination
+from .permissions import IsOwnerOrAdmin
 
-
-class OfferListView(generics.ListCreateAPIView):
-    queryset = Offer.objects.all().order_by('-updated_at')
-    serializer_class = OfferDetailSerializer
-    permission_classes = [IsAuthenticated]
-
-class OfferListView(ListAPIView):
-    serializer_class = OfferDetailSerializer
+class OfferViewSet(viewsets.ModelViewSet):
+    queryset = Offer.objects.all()
+    serializer_class = OfferSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'description']
+    ordering_fields = ['updated_at', 'details__price']
 
     def get_queryset(self):
         queryset = Offer.objects.all()
@@ -46,28 +46,18 @@ class OfferListView(ListAPIView):
 
         return queryset
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if not queryset.exists():
-            return Response(
-                {"message": "No offers found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user.pk)
+    
+    def perform_destroy(self, instance):
+        instance.delete()
 
-
-class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Offer.objects.all()
-    serializer_class = OfferSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_permissions(self):
-        if self.request.method in ['DELETE', 'PATCH']:
-            return [permissions.IsAuthenticated()]
-        return super().get_permissions()
-
-class OfferDetailSpecificView(generics.RetrieveAPIView):
+class OfferDetailViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
+class OfferDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = OfferDetail.objects.all()
+    serializer_class = OfferDetailSerializer
+    permission_classes = [permissions.IsAuthenticated]
