@@ -4,5 +4,5 @@ from .views import OfferViewSet, OfferDetailViewSet
 urlpatterns = [
     path('', OfferViewSet.as_view({'get': 'list', 'post': 'create'}), name='offer-list'),
     path('<int:pk>/', OfferViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}), name='offer-detail'),
-    path('offerdetails/<int:pk>/', OfferDetailViewSet.as_view({'get': 'retrieve'}), name='offer-detail-specific'),
+    path('<int:pk>/', OfferDetailViewSet.as_view({'get': 'retrieve'}), name='offer-detail-specific'),
 ]

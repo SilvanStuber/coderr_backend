@@ -1,33 +1,51 @@
 from rest_framework import serializers
 from offers_app.models import Offer, OfferDetail
+from profile_app.models import Profile
+
+
+from rest_framework import serializers
 
 class OfferDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfferDetail
-        fields = '__all__'
+        fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
+
+
 
 class OfferSerializer(serializers.ModelSerializer):
-    details = OfferDetailSerializer(many=True)
     
     class Meta:
         model = Offer
-        fields = '__all__'
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
 
     def create(self, validated_data):
-        details_data = validated_data.pop('details')
+        details_data = validated_data.pop('details', [])
         if len(details_data) != 3:
             raise serializers.ValidationError("An offer must have exactly three details (basic, standard, premium).")
-        offer = Offer.objects.create(**validated_data)
+        offer = Offer.objects.create(**validated_data)  
+        offer.min_price =  min(item['price'] for item in details_data)
+        offer.min_delivery_time = min(item['delivery_time_in_days'] for item in details_data)
+        offer.user_details = generate_user_data(offer.user)
         for detail_data in details_data:
-            OfferDetail.objects.create(**detail_data, offer=offer)
+            detail_serializer = OfferDetailSerializer(data=detail_data)
+            detail_serializer.is_valid(raise_exception=True)
+            detail = detail_serializer.save()
+            detail_url = str(f"/offerdetails/{detail.pk}/")
+            offer.details.append({"id": detail.pk, "url": detail_url}) 
+        offer.save()
         return offer
+
+
     
     def update(self, instance, validated_data):
-        details_data = validated_data.pop('details', None)
+        details_data = validated_data.pop('details', [])
         if details_data:
             instance.details.clear()
             for detail_data in details_data:
-                detail = OfferDetail.objects.create(**detail_data)
+                detail_serializer = OfferDetailSerializer(data=detail_data)
+                detail_serializer.is_valid(raise_exception=True)
+                detail = detail_serializer.save()
                 instance.details.add(detail)
 
         for attr, value in validated_data.items():
@@ -35,4 +53,12 @@ class OfferSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    
+
+def generate_user_data(user_id): 
+    profile =Profile.objects.get(id=user_id)
+    return {
+                'first_name': profile.first_name, 
+                'last_name': profile.last_name,
+                'username': profile.username,
+            }
+       

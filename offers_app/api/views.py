@@ -6,6 +6,9 @@ from django.db.models import Q
 from rest_framework import  viewsets, filters
 from .pagination import CustomPageNumberPagination
 from .permissions import IsOwnerOrAdmin
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
@@ -17,45 +20,46 @@ class OfferViewSet(viewsets.ModelViewSet):
     ordering_fields = ['updated_at', 'details__price']
 
     def get_queryset(self):
-        queryset = Offer.objects.all()
-        user = self.request.query_params.get('creator_id')
-        min_price = self.request.query_params.get('min_price')
-        max_delivery_time = self.request.query_params.get('max_delivery_time')
-        search = self.request.query_params.get('search')
-        ordering = self.request.query_params.get('ordering', '-updated_at')
+        try:
+            queryset = Offer.objects.all()
+            user = self.request.query_params.get('creator_id')
+            min_price = self.request.query_params.get('min_price')
+            max_delivery_time = self.request.query_params.get('max_delivery_time')
+            search = self.request.query_params.get('search')
+            ordering = self.request.query_params.get('ordering', '-updated_at')
 
-        if user:
-            queryset = queryset.filter(user=user)
+            if user:
+                queryset = queryset.filter(user=user)
 
-        if min_price:
-            min_price = float(min_price)
-            queryset = queryset.filter(price__gte=min_price)
+            if min_price:
+                min_price = float(min_price)
+                queryset = queryset.filter(price__gte=min_price)
 
-        if max_delivery_time:
-            max_delivery_time = int(max_delivery_time)
-            queryset = queryset.filter(delivery_time_in_days__lte=max_delivery_time)
+            if max_delivery_time:
+                max_delivery_time = int(max_delivery_time)
+                queryset = queryset.filter(delivery_time_in_days__lte=max_delivery_time)
 
-        if search:
-            queryset = queryset.filter(
-                Q(title__icontains=search) | Q(description__icontains=search)
-            )
+            if search:
+                queryset = queryset.filter(
+                    Q(title__icontains=search) | Q(description__icontains=search)
+                )
 
-        valid_ordering_fields = ['updated_at', '-updated_at', 'price', '-price']
-        if ordering in valid_ordering_fields:
-            queryset = queryset.order_by(ordering)
+            valid_ordering_fields = ['updated_at', '-updated_at', 'price', '-price']
+            if ordering in valid_ordering_fields:
+                queryset = queryset.order_by(ordering)
 
-        return queryset
+            return queryset
+
+        except NotFound:
+            return Response({
+                "message": "Offer nicht gefunden"
+            }, status=status.HTTP_404_NOT_FOUND)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.pk)
     
     def perform_destroy(self, instance):
         instance.delete()
-
-class OfferDetailViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = OfferDetail.objects.all()
-    serializer_class = OfferDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 class OfferDetailViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OfferDetail.objects.all()

@@ -55,7 +55,6 @@ class ProfileCustomerViewSets(APIView):
         try:
             customer_profiles = Profile.objects.filter(type="customer")
             serializer = CustomerProfileSerializer(customer_profiles, many=True)
-            print("serializer.data", serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except NotFound:
             return Response({

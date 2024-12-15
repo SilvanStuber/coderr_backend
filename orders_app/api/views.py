@@ -19,8 +19,6 @@ class OrderListView(generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except NotFound:
             return Response({
-                "ok": False,
-                "status": 404,
                 "message": "Order nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
 
