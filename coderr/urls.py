@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from offers_app.api.urls import offer_patterns, offerdetail_patterns
+from orders_app.api.urls import order_patterns, order_count_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,11 +29,12 @@ urlpatterns = [
     path('api/profile/', include('profile_app.api.urls')),
     path('api/profiles/', include('profile_app.api.urls')),
     path('api/reviews/', include('reviews_app.api.urls')), 
-    path('api/offers/', include('offers_app.api.urls')),
-    path('api/offerdetails/', include('offers_app.api.urls')),
-    path('api/orders/', include('orders_app.api.urls')),
-    path('api/order-count/', include('order_count_app.api.urls')),
-    path('api/completed-order-count/', include('order_count_app.api.urls')),
+    path('api/offers/', include((offer_patterns, 'offers_app'), namespace='offers')),
+    path('api/offerdetails/', include((offerdetail_patterns, 'offers_app'), namespace='offerdetails')),
+    path('api/orders/', include((order_patterns, 'orders_app'), namespace='orders')),
+    path('api/order-count/', include((order_count_patterns, 'orders_app'), namespace='order-count')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
