@@ -7,7 +7,7 @@ class OfferDetail(models.Model):
         ('standard', 'Standard'),
         ('premium', 'Premium')
     ]
-
+    user = models.CharField(max_length=100, default="")
     title = models.CharField(max_length=255)
     revisions = models.IntegerField(null=True, blank=True)
     delivery_time_in_days = models.PositiveIntegerField()

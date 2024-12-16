@@ -5,7 +5,6 @@ from .serializers import OfferSerializer, OfferDetailSerializer
 from django.db.models import Q
 from rest_framework import  viewsets, filters
 from .pagination import CustomPageNumberPagination
-from .permissions import IsOwnerOrAdmin
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -13,7 +12,7 @@ from rest_framework.response import Response
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']

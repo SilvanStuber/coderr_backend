@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from orders_app.models import Order
 from offers_app.models import OfferDetail
+from django.contrib.auth.models import User
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,7 +23,7 @@ class CreateOrderSerializer(serializers.Serializer):
     def create(self, validated_data):
         offer_detail = OfferDetail.objects.get(pk=validated_data['offer_detail_id'])
         customer_user = self.context['request'].user
-        business_user = offer_detail.offer.user
+        business_user = offer_detail.user
 
         return Order.objects.create(
             customer_user=customer_user,

@@ -1,13 +1,14 @@
 from rest_framework import generics
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from rest_framework import  viewsets
 from orders_app.models import Order
 from rest_framework.permissions import IsAuthenticated
 from .serializers import OrderSerializer, CreateOrderSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 
-class OrderListView(generics.ListAPIView):
+class OrderListView(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -15,80 +16,50 @@ class OrderListView(generics.ListAPIView):
         try:
             user = self.request.user
             orders = Order.objects.filter(customer_user=user) | Order.objects.filter(business_user=user)
-            serializer = self.get_serializer(orders, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = self.get_serializer(orders)
+            return serializer.data
         except NotFound:
             return Response({
                 "message": "Order nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
 
-
+    def create(self, request, *args, **kwargs):
+        # Verwende den CreateOrderSerializer
+        serializer = CreateOrderSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
         
+        # Speichere die Order
+        order = serializer.save()
+        
+        # Erstelle die Antwort
+        response_serializer = self.get_serializer(order)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-class OrderCreateView(generics.CreateAPIView):
-    serializer_class = CreateOrderSerializer
-    permission_classes = [IsAuthenticated]
+    def perform_destroy(self, instance):
+        instance.delete()
 
-    def perform_create(self, serializer):
-        serializer.save()
 
-class OrderDetailView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-
-class OrderUpdateView(generics.UpdateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-
-    def partial_update(self, request, *args, **kwargs):
-        order = self.get_object()
-        if "status" in request.data:
-            order.status = request.data["status"]
-            order.save()
-        serializer = self.get_serializer(order)
-        return Response(serializer.data)
-
-class OrderDeleteView(generics.DestroyAPIView):
-    queryset = Order.objects.all()
-    permission_classes = [IsAuthenticated]
-
-class OrderCountView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, business_user_id):
-        count = Order.objects.filter(business_user_id=business_user_id, status="in_progress").count()
-        return Response({"order_count": count})
-
-class CompletedOrderCountView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, business_user_id):
-        count = Order.objects.filter(business_user_id=business_user_id, status="completed").count()
-        return Response({"completed_order_count": count})   
-
-class OrderCountView(generics.GenericAPIView):
+class OrderCountView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         try:
             count = Order.objects.filter(business_user=business_user_id, status="in_progress").count()
-            return Response(count, status=status.HTTP_200_OK)
+            return count
         except NotFound:
             return Response({
-                "message": "Ordxer nicht gefunden"
+                "message": "Order nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
              
 
-class CompletedOrderCountView(generics.GenericAPIView):
+class CompletedOrderCountView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         try:
             count = Order.objects.filter(business_user=business_user_id, status="completed").count()
-            return Response(count, status=status.HTTP_200_OK)
+            return count
         except NotFound:
             return Response({
-                "message": "Ordxer nicht gefunden"
+                "message": "Order nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
