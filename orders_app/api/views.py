@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import OrderSerializer, CreateOrderSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.views import APIView
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -39,26 +40,26 @@ class OrderListView(viewsets.ModelViewSet):
         instance.delete()
 
 
-class OrderCountView(viewsets.ModelViewSet):
+class OrderCountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         try:
             count = Order.objects.filter(business_user=business_user_id, status="in_progress").count()
-            return count
-        except NotFound:
+            return Response({"order_count": count}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
             return Response({
                 "message": "Order nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
              
 
-class CompletedOrderCountView(viewsets.ModelViewSet):
+class CompletedOrderCountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         try:
             count = Order.objects.filter(business_user=business_user_id, status="completed").count()
-            return count
+            return Response({"completed_order_count": count}, status=status.HTTP_200_OK)
         except NotFound:
             return Response({
                 "message": "Order nicht gefunden"

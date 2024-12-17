@@ -10,8 +10,11 @@ order_patterns = [
 
 
 order_count_patterns = [
-    path('<int:business_user_id>/', OrderCountView.as_view({'get': 'retrieve'}), name='order-count'),
-    path('<int:business_user_id>/completed/', CompletedOrderCountView.as_view({'get': 'retrieve'}), name='completed-order-count'),
+    path('<int:business_user_id>/', OrderCountView.as_view(), name='order-count'),
+]
+
+completed_order_count_patterns = [
+    path('<int:business_user_id>/', CompletedOrderCountView.as_view(), name='completed-order-count'),
 ]
 
 

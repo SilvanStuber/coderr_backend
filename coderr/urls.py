@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from offers_app.api.urls import offer_patterns, offerdetail_patterns
-from orders_app.api.urls import order_patterns, order_count_patterns
+from orders_app.api.urls import order_patterns, order_count_patterns, completed_order_count_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,8 +33,8 @@ urlpatterns = [
     path('api/offerdetails/', include((offerdetail_patterns, 'offers_app'), namespace='offerdetails')),
     path('api/orders/', include((order_patterns, 'orders_app'), namespace='orders')),
     path('api/order-count/', include((order_count_patterns, 'orders_app'), namespace='order-count')),
+    path('api/completed-order-count/', include((completed_order_count_patterns, 'orders_app'), namespace='completed-order-count')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 

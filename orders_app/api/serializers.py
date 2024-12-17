@@ -22,7 +22,7 @@ class CreateOrderSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         offer_detail = OfferDetail.objects.get(pk=validated_data['offer_detail_id'])
-        customer_user = self.context['request'].user
+        customer_user = self.context['request'].user.pk
         business_user = offer_detail.user
 
         return Order.objects.create(

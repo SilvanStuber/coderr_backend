@@ -3,7 +3,18 @@ from profile_app.models import Profile
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['id', 'pk', 'username', 'email'] 
+        model = Profile  # Das Modell muss explizit angegeben werden
+        fields = ['pk', 'username', 'first_name', 'last_name']
+
+        def get_user(self, obj):
+            user_id = serializers.SerializerMethodField()
+            profile = Profile.objects.get(id=user_id)
+            return {
+                'pk': user_id,
+                'username': profile .username,
+                'first_name': profile .first_name,
+                'last_name': profile .last_name,
+            }
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,28 +34,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'created_at',
         ]
 
-class CustomerProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = [
-            'user',
-            'file',
-            'uploaded_at',
-            'type',
-        ]
+    
 
-
-class BusinessProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = [
-            'user',
-            'file',
-            'uploaded_at', 
-            "location",
-            "tel",
-            "description",
-            "working_hours",
-            'type',
-        ]
+    
+    
         
