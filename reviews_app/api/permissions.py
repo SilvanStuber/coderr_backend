@@ -3,7 +3,7 @@ from profile_app.models import Profile
 
 class IsReviewerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.reviewer == request.user or request.user.is_staff
+        return obj.reviewer == str(request.user.pk) or request.user.is_staff
 
 
 class IsCustomerProfile(permissions.BasePermission):

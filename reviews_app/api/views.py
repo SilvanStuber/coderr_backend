@@ -10,7 +10,6 @@ from reviews_app.models import Review
 
 class ReviewListCreateView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = ReviewSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['business_user', 'reviewer']
@@ -22,19 +21,19 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
     def perform_create(self, serializer):
-        serializer.save(reviewer=self.request.user)
+        business_user = self.request.data.get('business_user') 
+        serializer.save(reviewer=str(self.request.user.pk), business_user=business_user)
 
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = ReviewSerializer
-    permission_classes = [IsReviewerOrAdmin]
 
     def get_permissions(self):
         if self.request.method in ['PATCH', 'DELETE']:
             return [permissions.IsAuthenticated(), IsReviewerOrAdmin()]
         return [permissions.AllowAny()]
+
 
     def partial_update(self, request, *args, **kwargs):
         self.kwargs['partial'] = True

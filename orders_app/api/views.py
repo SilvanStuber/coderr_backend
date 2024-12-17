@@ -15,7 +15,7 @@ class OrderListView(viewsets.ModelViewSet):
 
     def get(self, request, *args, **kwargs):
         try:
-            user = self.request.user
+            user = self.request.user.pk
             orders = Order.objects.filter(customer_user=user) | Order.objects.filter(business_user=user)
             serializer = self.get_serializer(orders)
             return serializer.data
@@ -25,14 +25,9 @@ class OrderListView(viewsets.ModelViewSet):
             }, status=status.HTTP_404_NOT_FOUND)
 
     def create(self, request, *args, **kwargs):
-        # Verwende den CreateOrderSerializer
         serializer = CreateOrderSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        
-        # Speichere die Order
         order = serializer.save()
-        
-        # Erstelle die Antwort
         response_serializer = self.get_serializer(order)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
