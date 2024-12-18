@@ -55,7 +55,6 @@ class ProfileViewSets(generics.ListCreateAPIView):
                 "errors": e.detail
             }, status=status.HTTP_400_BAD_REQUEST)
 
-    
 class ProfileCustomerViewSets(APIView):
     permission_classes = [IsAuthenticated]
 

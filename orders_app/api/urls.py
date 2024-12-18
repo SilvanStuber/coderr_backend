@@ -8,7 +8,6 @@ order_patterns = [
     path('<int:pk>/', OrderListView.as_view({'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}), name='order-detail'),
 ]
 
-
 order_count_patterns = [
     path('<int:business_user_id>/', OrderCountView.as_view(), name='order-count'),
 ]

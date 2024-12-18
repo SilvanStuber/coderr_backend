@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from rest_framework.exceptions import NotFound
 from rest_framework import status
 
-
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
 

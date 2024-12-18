@@ -6,7 +6,6 @@ from django.core.validators import validate_email
 
 class RegistrationSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'repeated_password']

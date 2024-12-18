@@ -41,7 +41,6 @@ class OfferSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
 def generate_offer_detail(details_data, offer):
     for detail_data in details_data:
             detail_data['user'] = offer.user
@@ -50,7 +49,6 @@ def generate_offer_detail(details_data, offer):
             detail = detail_serializer.save()
             detail_url = str(f"/offerdetails/{detail.pk}/")
             offer.details.append({"id": detail.pk, "url": detail_url}) 
-
 
 def generate_user_data(user_id): 
     profile = Profile.objects.get(id=user_id)

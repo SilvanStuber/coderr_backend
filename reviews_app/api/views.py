@@ -24,7 +24,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         business_user = self.request.data.get('business_user') 
         serializer.save(reviewer=str(self.request.user.pk), business_user=business_user)
 
-
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -33,7 +32,6 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ['PATCH', 'DELETE']:
             return [permissions.IsAuthenticated(), IsReviewerOrAdmin()]
         return [permissions.AllowAny()]
-
 
     def partial_update(self, request, *args, **kwargs):
         self.kwargs['partial'] = True
