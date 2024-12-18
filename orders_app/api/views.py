@@ -7,11 +7,17 @@ from .serializers import OrderSerializer, CreateOrderSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
+from .permissions import IsAdminUser
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsAuthenticated(), IsAdminUser()]
+        return super().get_permissions()
 
     def get(self, request, *args, **kwargs):
         try:

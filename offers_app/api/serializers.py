@@ -17,7 +17,7 @@ class OfferSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         details_data = validated_data.pop('details', [])
         if len(details_data) != 3:
-            raise serializers.ValidationError("An offer must have exactly three details (basic, standard, premium).")
+            raise serializers.ValidationError("An offer must have exactly three details (basic, standard, premium).") 
         offer = Offer.objects.create(**validated_data)  
         offer.min_price = min(item['price'] for item in details_data)
         offer.min_delivery_time = min(item['delivery_time_in_days'] for item in details_data)

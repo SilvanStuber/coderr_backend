@@ -7,10 +7,18 @@ from rest_framework import status
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
+from .permissions import IsOwnerOrAdmin
 
 
 class ProfileViewSets(generics.ListCreateAPIView):  
     permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     def get(self, request, *args, **kwargs):
         try:
@@ -62,7 +70,7 @@ class ProfileCustomerViewSets(APIView):
                     "first_name": profile.first_name,
                     "last_name": profile.last_name,
                 },
-                "file": profile.file.url if profile.file else None,  # Verwende die URL oder None
+                "file": profile.file.url if profile.file else None,
                 "location": profile.location,
                 "tel": profile.tel,
                 "description": profile.description,

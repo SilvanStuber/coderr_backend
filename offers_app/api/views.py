@@ -8,6 +8,7 @@ from .pagination import CustomPageNumberPagination
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from .permissions import IsCustomerProfile, IsOwnerOrAdmin
 
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
@@ -17,6 +18,15 @@ class OfferViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'details__price']
+
+    def get_permissions(self):
+        if self.action in ['create']:
+            permission_classes = [IsAuthenticated, IsCustomerProfile]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         try:
