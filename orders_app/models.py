@@ -1,7 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
-from offers_app.models import OfferDetail
-
 class Order(models.Model):
     STATUS_CHOICES = [
         ('in_progress', 'In Progress'),

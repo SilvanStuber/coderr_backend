@@ -4,8 +4,6 @@ from .serializers import RegistrationSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from profile_app.models import Profile
-from django.contrib.auth.models import User
-from rest_framework.exceptions import NotFound
 from rest_framework import status
 
 class RegistrationView(APIView):
