@@ -37,7 +37,7 @@ class OfferViewSet(viewsets.ModelViewSet):
             ordering = self.request.query_params.get('ordering', '-updated_at')
 
             if user_id:
-                queryset = queryset.filter(user_id=user_id)
+                queryset = queryset.filter(user=user_id)
 
             if min_price:
                 try:

@@ -18,7 +18,7 @@ class BaseInfoView(APIView):
 
         data = {
             "review_count": review_count,
-            "average_rating": round(average_rating, 1),
+            "average_rating": average_rating,
             "business_profile_count": business_profile_count,
             "offer_count": offer_count,
         }

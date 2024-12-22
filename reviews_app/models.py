@@ -1,7 +1,7 @@
 from django.db import models
 class Review(models.Model):
-    business_user = models.CharField(max_length=100, default="")
-    reviewer = models.CharField(max_length=100, default="")
+    business_user = models.IntegerField()
+    reviewer = models.IntegerField()
     rating = models.PositiveSmallIntegerField()
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
