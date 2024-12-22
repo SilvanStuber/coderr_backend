@@ -3,7 +3,7 @@ from profile_app.models import Profile
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile  # Das Modell muss explizit angegeben werden
+        model = Profile
         fields = ['pk', 'username', 'first_name', 'last_name']
 
         def get_user(self, obj):

@@ -1,6 +1,4 @@
 from django.db import models
-from django.db import models
-
 class OfferDetail(models.Model):
     OFFER_TYPES = [
         ('basic', 'Basic'),

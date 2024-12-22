@@ -1,9 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
-
-
 class RegistrationSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
     class Meta:
