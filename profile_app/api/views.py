@@ -28,7 +28,7 @@ class ProfileViewSets(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except NotFound:
             return Response({
-                "message": "Profil nicht gefunden"
+                "detail": "Profil nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
         
     def patch(self, request, *args, **kwargs):
@@ -44,11 +44,11 @@ class ProfileViewSets(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except NotFound:
             return Response({
-                "message": "Profil nicht gefunden"
+                "detail": "Profil nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
         except PermissionDenied:
             return Response({
-                "message": "Keine Berechtigung, dieses Profil zu bearbeiten."
+                "detail": "Keine Berechtigung, dieses Profil zu bearbeiten."
             }, status=status.HTTP_403_FORBIDDEN)
         except ValidationError as e:
             return Response({
