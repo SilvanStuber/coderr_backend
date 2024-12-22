@@ -3,6 +3,7 @@ from offers_app.models import Offer, OfferDetail
 from profile_app.models import Profile
 from rest_framework import serializers
 
+
 class OfferDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfferDetail
@@ -13,6 +14,16 @@ class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
+
+    def to_representation(self, instance):
+            queryset_called = self.context.get('queryset_called', False)
+            data = super().to_representation(instance)
+            if queryset_called == True:
+                limited_data = generate_data_details_url(data)
+            else: 
+                limited_data = generate_data_details_all(data)
+            return limited_data
 
     def create(self, validated_data):
         details_data = validated_data.pop('details', [])
@@ -35,11 +46,12 @@ class OfferSerializer(serializers.ModelSerializer):
                 detail_serializer.is_valid(raise_exception=True)
                 detail = detail_serializer.save()
                 detail_url = str(f"/offerdetails/{detail.pk}/")
-                instance.details.append({"id": detail.pk, "url": detail_url})
+                instance.details.append({"id": detail.pk, "url": detail_url, "title": detail_data['title'], "revisions": detail_data['revisions'],  "delivery_time_in_days": detail_data['delivery_time_in_days'], "price": detail_data['price'],  "features": detail_data['features'],  "offer_type": detail_data['offer_type']}) 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
+    
 
 def generate_offer_detail(details_data, offer):
     for detail_data in details_data:
@@ -48,7 +60,7 @@ def generate_offer_detail(details_data, offer):
             detail_serializer.is_valid(raise_exception=True)
             detail = detail_serializer.save()
             detail_url = str(f"/offerdetails/{detail.pk}/")
-            offer.details.append({"id": detail.pk, "url": detail_url}) 
+            offer.details.append({"id": detail.pk, "url": detail_url, "title": detail_data['title'], "revisions": detail_data['revisions'],  "delivery_time_in_days": detail_data['delivery_time_in_days'], "price": detail_data['price'],  "features": detail_data['features'],  "offer_type": detail_data['offer_type']}) 
 
 def generate_user_data(user_id): 
     profile = Profile.objects.get(id=user_id)
@@ -57,4 +69,38 @@ def generate_user_data(user_id):
                 'last_name': profile.last_name,
                 'username': profile.username,
             }
-       
+
+def generate_data_details_url(data):
+     return{
+            "id": data["id"],
+            "user": data["user"],
+            "title": data["title"],
+            "image": data["image"],
+            "description": data["description"],
+            "details": [
+                        {
+                            "id": detail["id"],
+                            "url": detail["url"],
+                        }
+                        for detail in data["details"]
+                    ],
+            }     
+
+def generate_data_details_all(data):
+     return{
+            "id": data["id"],
+            "title": data["title"],
+            "image": data["image"],
+            "description": data["description"],
+            "details": [
+                        {
+                            "title": detail["title"],
+                            "revisions": detail["revisions"],
+                            "delivery_time_in_days": detail["delivery_time_in_days"],
+                            "price": detail["price"],
+                            "features": detail["features"],
+                            "offer_type": detail["offer_type"],
+                        }
+                        for detail in data["details"]
+                    ],
+            }

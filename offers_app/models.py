@@ -7,7 +7,7 @@ class OfferDetail(models.Model):
         ('standard', 'Standard'),
         ('premium', 'Premium')
     ]
-    user = models.CharField(max_length=100, default="")
+    user = models.IntegerField(default=2)
     title = models.CharField(max_length=255)
     revisions = models.IntegerField(null=True, blank=True)
     delivery_time_in_days = models.PositiveIntegerField()
@@ -16,7 +16,7 @@ class OfferDetail(models.Model):
     offer_type = models.CharField(max_length=20, choices=OFFER_TYPES)
 
 class Offer(models.Model):
-    user = models.CharField(max_length=100, default="")
+    user = models.IntegerField(default=2)
     title = models.CharField(max_length=255)
     image =  models.ImageField(upload_to='profile_pictures/', null=True, )
     description = models.TextField()

@@ -1,4 +1,3 @@
-
 # Coderr Backend
 
 This is the backend for the Coderr application, developed with Django and the Django REST Framework.
@@ -22,7 +21,7 @@ This is the backend for the Coderr application, developed with Django and the Dj
 
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate
    ```
 
 3. **Install dependencies:**
@@ -78,7 +77,3 @@ python manage.py test
 ## Contributing
 
 Contributions are welcome! Please fork the repository, make your changes, and submit a pull request. Ensure that all tests pass and that your code adheres to PEP8 standards.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

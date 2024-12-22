@@ -9,8 +9,8 @@ class Order(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
-    customer_user = models.CharField(max_length=100, default="")
-    business_user = models.CharField(max_length=100, default="")
+    customer_user = models.IntegerField()
+    business_user = models.IntegerField()
     title = models.CharField(max_length=255)
     revisions = models.IntegerField(default=0)
     delivery_time_in_days = models.PositiveIntegerField()

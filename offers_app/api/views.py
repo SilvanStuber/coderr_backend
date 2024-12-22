@@ -10,6 +10,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from .permissions import IsCustomerProfile, IsOwnerOrAdmin
 
+
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
@@ -28,7 +29,7 @@ class OfferViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-    def get_queryset(self):
+    def get_queryset(self):   
         try:
             queryset = Offer.objects.all()
             user = self.request.query_params.get('creator_id')
@@ -55,8 +56,8 @@ class OfferViewSet(viewsets.ModelViewSet):
 
             valid_ordering_fields = ['updated_at', '-updated_at', 'price', '-price']
             if ordering in valid_ordering_fields:
+                self.get_serializer_context()
                 queryset = queryset.order_by(ordering)
-
             return queryset
 
         except NotFound:
@@ -64,13 +65,27 @@ class OfferViewSet(viewsets.ModelViewSet):
                 "message": "Offer nicht gefunden"
             }, status=status.HTTP_404_NOT_FOUND)
 
+
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.pk)
     
     def perform_destroy(self, instance):
-        instance.delete()
+        instance.delete()   
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.request.query_params:
+            context['queryset_called'] = True
+        else:
+            context['queryset_called'] = False
+    
+        return context
+
+    
 class OfferDetailViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
