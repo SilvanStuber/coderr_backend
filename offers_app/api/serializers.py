@@ -15,7 +15,6 @@ class OfferSerializer(serializers.ModelSerializer):
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
 
-
     def to_representation(self, instance):
             queryset_called = self.context.get('queryset_called', False)
             data = super().to_representation(instance)
@@ -77,6 +76,8 @@ def generate_data_details_url(data):
             "title": data["title"],
             "image": data["image"],
             "description": data["description"],
+            "created_at": data["created_at"],
+            "updated_at": data["updated_at"],
             "details": [
                         {
                             "id": detail["id"],
@@ -84,16 +85,21 @@ def generate_data_details_url(data):
                         }
                         for detail in data["details"]
                     ],
+            "min_price": data["min_price"],
+            "min_delivery_time": data["min_delivery_time"],
+            "user_details": data["user_details"]
             }     
 
 def generate_data_details_all(data):
      return{
             "id": data["id"],
+            "user": data["user"],
             "title": data["title"],
             "image": data["image"],
             "description": data["description"],
             "details": [
-                        {
+                        {   
+                            "id": detail["id"],
                             "title": detail["title"],
                             "revisions": detail["revisions"],
                             "delivery_time_in_days": detail["delivery_time_in_days"],
