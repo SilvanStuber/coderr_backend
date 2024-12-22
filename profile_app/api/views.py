@@ -70,10 +70,7 @@ class ProfileCustomerViewSets(APIView):
                     "last_name": profile.last_name,
                 },
                 "file": profile.file.url if profile.file else None,
-                "location": profile.location,
-                "tel": profile.tel,
-                "description": profile.description,
-                "working_hours": profile.working_hours,
+                
                 "type": profile.type
             })
         return Response(return_data_customer_profiles, status=status.HTTP_200_OK)
