@@ -7,7 +7,7 @@ class IsOwnerOrAdmin(permissions.BasePermission):
             return True     
         return False
 
-class IsCustomerProfile(permissions.BasePermission):
+class IsBusinessProfile(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and is_business_profile(request)
     

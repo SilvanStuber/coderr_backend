@@ -1,4 +1,3 @@
-from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import  viewsets
 from orders_app.models import Order
@@ -7,17 +6,21 @@ from .serializers import OrderSerializer, CreateOrderSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
-from .permissions import IsAdminUser
+from .permissions import IsOwnerOrAdmin, IsCustomerProfile
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-
+    
     def get_permissions(self):
-        if self.action == 'destroy':
-            return [IsAuthenticated(), IsAdminUser()]
-        return super().get_permissions()
+        if self.action in ['create']:
+            permission_classes = [IsAuthenticated, IsCustomerProfile]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def get(self, request, *args, **kwargs):
         try:

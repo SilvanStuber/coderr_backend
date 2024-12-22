@@ -5,10 +5,7 @@ from .serializers import OfferSerializer, OfferDetailSerializer
 from django.db.models import Q
 from rest_framework import  viewsets, filters
 from .pagination import CustomPageNumberPagination
-from rest_framework import status
-from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
-from .permissions import IsCustomerProfile, IsOwnerOrAdmin
+from .permissions import IsOwnerOrAdmin, IsBusinessProfile
 
 
 class OfferViewSet(viewsets.ModelViewSet):
@@ -22,7 +19,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create']:
-            permission_classes = [IsAuthenticated, IsCustomerProfile]
+            permission_classes = [IsAuthenticated, IsBusinessProfile]
         elif self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else: 
@@ -33,7 +30,6 @@ class OfferViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
             queryset = Offer.objects.all()
-
             user_id = self.request.query_params.get('creator_id')
             min_price = self.request.query_params.get('min_price')
             max_delivery_time = self.request.query_params.get('max_delivery_time')
@@ -70,10 +66,6 @@ class OfferViewSet(viewsets.ModelViewSet):
 
             return queryset
 
-
-
-
-    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.pk)
     
