@@ -19,9 +19,10 @@ class OfferSerializer(serializers.ModelSerializer):
             queryset_called = self.context.get('queryset_called', False)
             data = super().to_representation(instance)
             if queryset_called == True:
-                limited_data = generate_data_details_url(data)
+                data_details = generate_data_details_url(data)
             else: 
-                limited_data = generate_data_details_all(data)
+                data_details = generate_data_details_all(data)
+            limited_data = generate_data_offer_response(data, data_details)
             return limited_data
 
     def create(self, validated_data):
@@ -70,43 +71,39 @@ def generate_user_data(user_id):
             }
 
 def generate_data_details_url(data):
-     return{
-            "id": data["id"],
-            "user": data["user"],
-            "title": data["title"],
-            "image": data["image"],
-            "description": data["description"],
-            "created_at": data["created_at"],
-            "updated_at": data["updated_at"],
-            "details": [
-                        {
-                            "id": detail["id"],
-                            "url": detail["url"],
-                        }
-                        for detail in data["details"]
-                    ],
-            "min_price": data["min_price"],
-            "min_delivery_time": data["min_delivery_time"],
-            "user_details": data["user_details"]
-            }     
+     return [
+             {
+                 "id": detail["id"],
+                 "url": detail["url"],
+             }
+             for detail in data["details"]
+            ]           
 
 def generate_data_details_all(data):
-     return{
-            "id": data["id"],
-            "user": data["user"],
-            "title": data["title"],
-            "image": data["image"],
-            "description": data["description"],
-            "details": [
-                        {   
-                            "id": detail["id"],
-                            "title": detail["title"],
-                            "revisions": detail["revisions"],
-                            "delivery_time_in_days": detail["delivery_time_in_days"],
-                            "price": detail["price"],
-                            "features": detail["features"],
-                            "offer_type": detail["offer_type"],
-                        }
-                        for detail in data["details"]
-                    ],
+     return [{   
+                "id": detail["id"],
+                "title": detail["title"],
+                "revisions": detail["revisions"],
+                "delivery_time_in_days": detail["delivery_time_in_days"],
+                "price": detail["price"],
+                "features": detail["features"],
+                "offer_type": detail["offer_type"],
+                }
+                for detail in data["details"]
+                ],
+
+
+def generate_data_offer_response(data, data_details):
+     return {
+                "id": data["id"],
+                "user": data["user"],
+                "title": data["title"],
+                "image": data["image"],
+                "description": data["description"],
+                "created_at": data["created_at"],
+                "updated_at": data["updated_at"],
+                "details": data_details,
+                "min_price": data["min_price"],
+                "min_delivery_time": data["min_delivery_time"],
+                "user_details": data["user_details"]
             }

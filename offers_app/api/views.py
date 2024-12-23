@@ -38,7 +38,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
             if user_id:
                 queryset = queryset.filter(user=user_id)
-
+            
             if min_price:
                 try:
                     min_price = float(min_price)
@@ -46,13 +46,14 @@ class OfferViewSet(viewsets.ModelViewSet):
                 except ValueError:
                     pass
 
+            
             if max_delivery_time:
                 try:
                     max_delivery_time = int(max_delivery_time)
-                    queryset = queryset.filter(max_delivery_time__lte=max_delivery_time)
+                    queryset = queryset.filter(min_delivery_time__lte=max_delivery_time)
                 except ValueError:
-                    pass  
-
+                    pass
+  
             if search:
                 queryset = queryset.filter(
                     Q(title__icontains=search) | Q(description__icontains=search)
