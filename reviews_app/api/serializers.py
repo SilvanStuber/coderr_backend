@@ -9,6 +9,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['business_user', 'reviewer']
 
     def validate(self, request_data):
+        print("request_data",request_data)
         business_user = self.context['request'].data.get('business_user')
         if self.context['request'].method == 'POST':
             if Review.objects.filter(business_user=business_user, reviewer=self.context['request'].user).exists():
