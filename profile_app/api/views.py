@@ -75,7 +75,6 @@ class ProfileCustomerViewSets(APIView):
             })
         return Response(return_data_customer_profiles, status=status.HTTP_200_OK)
 
-
 class ProfileBusinessViewSets(APIView):
     permission_classes = [IsAuthenticated]
 

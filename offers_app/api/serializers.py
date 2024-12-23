@@ -9,7 +9,6 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'user', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type', 'user']
 
-
 class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
@@ -53,7 +52,6 @@ class OfferSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-
 def generate_offer_detail(details_data, offer):
     for detail_data in details_data:
             detail_data['user'] = offer.user

@@ -7,7 +7,6 @@ from rest_framework import  viewsets, filters
 from .pagination import CustomPageNumberPagination
 from .permissions import IsOwnerOrAdmin, IsBusinessProfile
 
-
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
@@ -46,7 +45,6 @@ class OfferViewSet(viewsets.ModelViewSet):
                 except ValueError:
                     pass
 
-            
             if max_delivery_time:
                 try:
                     max_delivery_time = int(max_delivery_time)
