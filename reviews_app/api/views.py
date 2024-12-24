@@ -22,18 +22,16 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             queryset = Review.objects.all()
             reviewer_id = self.request.query_params.get('reviewer_id')
             business_user_id = self.request.query_params.get('business_user_id')
-            print()
             if reviewer_id:
                 queryset = queryset.filter(reviewer=reviewer_id)
-
             if business_user_id:
                 queryset = queryset.filter(business_user=business_user_id)
-
             return queryset
 
     def perform_create(self, serializer):
-        business_user = self.request.data.get('business_user')
-        serializer.save(reviewer=self.request.user.pk, business_user=business_user)
+        business_user_id = self.request.data.get('business_user')
+        serializer.save(reviewer=self.request.user.pk, business_user=business_user_id)
+
 
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):

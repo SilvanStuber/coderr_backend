@@ -97,6 +97,8 @@ def generate_data_details_all(data):
             "title": data["title"],
             "image": data["image"],
             "description": data["description"],
+            "created_at": data["created_at"],
+            "updated_at": data["updated_at"],
             "details": [
                         {   
                             "id": detail["id"],
