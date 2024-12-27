@@ -32,6 +32,8 @@ class OfferSerializer(serializers.ModelSerializer):
         offer.min_delivery_time = min(item['delivery_time_in_days'] for item in details_data)
         offer.user_details = generate_user_data(offer.user)
         generate_offer_detail(details_data, offer)
+        print("%.2f" % offer.min_price)
+        print(type("%.2f" % offer.min_price))
         offer.save()
         return offer
     
