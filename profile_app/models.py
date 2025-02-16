@@ -6,7 +6,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=100, default="")
     last_name = models.CharField(max_length=100, default="")
     file = models.ImageField(upload_to='profile_pictures/', default="")
-    location = models.CharField(max_length=255, )
+    location = models.CharField(max_length=255, blank=True)
     tel = models.CharField(max_length=20, default="")
     description = models.TextField(blank=True)
     working_hours = models.CharField(max_length=50, blank=True)
