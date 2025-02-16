@@ -37,20 +37,37 @@ class OfferSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         details_data = validated_data.pop('details', [])
-        instance.min_price = min(item['price'] for item in details_data)
-        instance.min_delivery_time = min(item['delivery_time_in_days'] for item in details_data)
+
         if details_data:
+            instance.min_price = min(item['price'] for item in details_data)
+            instance.min_delivery_time = min(item['delivery_time_in_days'] for item in details_data)
+
             instance.details = []  
             for detail_data in details_data:
                 detail_serializer = OfferDetailSerializer(data=detail_data)
                 detail_serializer.is_valid(raise_exception=True)
                 detail = detail_serializer.save()
                 detail_url = str(f"/offerdetails/{detail.pk}/")
-                instance.details.append({"id": detail.pk, "url": detail_url, "title": detail_data['title'], "revisions": detail_data['revisions'],  "delivery_time_in_days": detail_data['delivery_time_in_days'], "price": detail_data['price'],  "features": detail_data['features'],  "offer_type": detail_data['offer_type']}) 
+                instance.details.append({
+                    "id": detail.pk,
+                    "url": detail_url,
+                    "title": detail_data['title'],
+                    "revisions": detail_data['revisions'],
+                    "delivery_time_in_days": detail_data['delivery_time_in_days'],
+                    "price": detail_data['price'],
+                    "features": detail_data['features'],
+                    "offer_type": detail_data['offer_type']
+                }) 
+        else:
+            instance.min_price = None
+            instance.min_delivery_time = None  # Alternativ kannst du Standardwerte setzen, z.B. `0`
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
         instance.save()
         return instance
+
     
 def generate_offer_detail(details_data, offer):
     for detail_data in details_data:
