@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-adl(gam1%)4e^jnw2icke&tho00bjpe&kta$np=ncc=8%ozxp+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.65.108.156','gc.silvanstuber.ch']
+ALLOWED_HOSTS = [ "127.0.0.1",
+    "localhost", '34.65.108.156','gc.silvanstuber.ch']
 
 
 # Application definition
@@ -63,13 +64,29 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
     "https://gc.silvanstuber.ch",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS"
+]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-requested-with",
+]
 
 ROOT_URLCONF = 'coderr.urls'
 
